@@ -1,72 +1,64 @@
-# Spring Boot Template
+# CouchbaseDB Example
 
-This is a Spring Boot template project that includes basic configurations for a REST API, H2 in-memory database, and Swagger for API documentation.
+This is a Spring Boot project that includes basic configurations for a REST API, CouchbaseDB session management, and Swagger for API documentation.
 
 ## Prerequisites
 
-- **Java 21**: This project is developed with Java 21.
+- **Java 21**
+- **Docker & Docker Compose**
 
 ## Dependencies
 
-The following dependencies are included in the `pom.xml`:
+- Spring Boot Web
+- Spring Session
+- Couchbase Java SDK
+- Swagger / Springdoc OpenAPI
 
-- **Spring Boot Starter**: Core Spring Boot dependency.
-- **Spring Boot Starter Data JPA**: Provides integration with JPA and Hibernate for database operations.
-- **Spring Boot Starter Web**: Sets up a web server and includes Spring MVC for building REST APIs.
-- **Spring Boot Starter Test**: Includes JUnit, Mockito, and Spring Test for testing.
-- **H2 Database**: In-memory database for development and testing.
-- **SpringDoc OpenAPI Starter WebMVC UI**: Provides Swagger UI for API documentation.
-- **Spring Boot Starter Validation**: Enables Bean Validation (JSR 380) support.
+## How to Run the Application
 
-## How to Run
+You can run the application locally, but using Docker simplifies the setup and is the preferred approach in this example.
 
-1. Clone the repository.
-2. Build the project using Maven:
-   ```bash
-   mvn clean install
-   ```
-3. Run the application:
-   ```bash
-   mvn spring-boot:run
-   ```
-4. Access the following URLs:
-    - **Swagger UI**: [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)
-    - **H2 Console**: [http://localhost:8080/h2-console](http://localhost:8080/h2-console)
+### 1. Build the Docker Images
 
-## Configuration
+```bash
+docker-compose build
+```
 
-### Application Properties
+### 2. Start and Configure Couchbase
 
-Key configurations include:
+Start the Couchbase service:
 
-- **H2 Database**:
-    - Name: `springboot_template`
-    - Username: `user`
-    - Password: `password`
-- **H2 Console**:
-    - Enabled: `true`
-    - Path: `/h2-console`
-- **Swagger API Docs Path**: `/api-docs`
+```bash
+docker-compose up couchbase
+```
 
-### Docker Support
+Then, in your browser, go to [http://localhost:8091](http://localhost:8091) and follow these steps to initialize Couchbase:
 
-The project includes a `docker-compose.yml` file for containerized deployment. To run the application in Docker:
+- Complete the cluster setup wizard.
+- Use the following configuration:
+    - **Username**: `Administrator`
+    - **Password**: `Administrator`
+- After setup is complete:
+    - From the **left menu**, click on **"Buckets"**
+    - On the Buckets page, click the **"Add Bucket"** button in the **top-right corner**
+    - Enter `session_bucket` as the bucket name and complete the creation process
 
-1. Build the Docker image:
-   ```bash
-   docker-compose build
-   ```
-2. Start the container:
-   ```bash
-   docker-compose up
-   ```
+> 📝 Make sure the bucket name exactly matches the one configured in your application.
+
+### 3. Start the Spring Boot App
+
+Once Couchbase is fully set up and the bucket is created:
+
+```bash
+docker-compose up app
+```
+
+## Swagger
+
+- **Swagger UI**: [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)
 
 ## API Endpoints
 
-The application exposes a sample API endpoint:
+The application exposes a sample endpoint:
 
-- **GET** `/api/v1/springboot-template/hello`: Returns a success message.
-
-## License
-
-This project is licensed under the MIT License.
+- **GET** `/api/v1/session/create` — Creates and returns a new session.
