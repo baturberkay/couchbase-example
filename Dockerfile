@@ -1,16 +1,15 @@
 FROM openjdk:21-jdk-slim AS build
-LABEL authors="author-name"
+LABEL authors="batur"
 
-WORKDIR /
-
+WORKDIR /app
 COPY . .
-RUN chmod +x ./mvnw
-RUN ./mvnw clean package -DskipTests
+RUN chmod +x ./mvnw && ./mvnw clean package -DskipTests
 
 FROM openjdk:21-jdk-slim
-WORKDIR /springboot-template
+WORKDIR /couchbase-example
 
-COPY --from=build /target/springboot-template*.jar springboot-template.jar
+# Wildcard used correctly
+COPY --from=build /app/target/*.jar app.jar
+
 EXPOSE 8080
-
-ENTRYPOINT ["java", "-jar", "springboot-template.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar"]
